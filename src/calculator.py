@@ -326,3 +326,20 @@ class Interpreter(NodeVisitor):
     def interpret(self):
         head = self.parser.parse()
         return self.visit(head)
+
+
+def main():
+
+    from sys import argv
+
+    for command in argv[1:]:
+        print(f"{command} = ", end = "")
+        lexer = Lexer(command)
+        parser = Parser(lexer)
+        interpreter = Interpreter(parser)
+        result = interpreter.interpret()
+
+        print(result)
+
+if __name__ == '__main__':
+    main()
