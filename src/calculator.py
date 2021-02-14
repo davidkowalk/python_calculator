@@ -31,7 +31,7 @@ class Token(object):
 class Lexer(object):
 
     """
-    The Lexical Analyzer turns a stream of Tokens into an abstract Syntax tree by looking at the Token and fitting into a grammar
+    The Lexical Analyzer turns a stream of Characters into a stream of Tokens by looking at the string and fitting it into a grammar
     """
 
     def __init__(self, text):
@@ -133,3 +133,35 @@ class Lexer(object):
             self.error()
 
         return Token(EOF, None)
+
+# Data Structure
+# ==============================================================================
+
+
+###############################################################################
+#                                                                             #
+#  PARSER                                                                     #
+#                                                                             #
+###############################################################################
+
+# Turns Token Stream into Tree Structure (Abstract Syntax Tree / AST)
+
+class AST(object):
+    pass
+
+class UnaryOp(AST):
+
+    def __init__(self, op, expr):
+        self.token = self.op = op
+        self.expr = expr
+
+class BinOp(AST):
+    def __init__(self, left, op, right):
+        self.left = left
+        self.token = self.op = op
+        self.right = right
+
+class Num(AST):
+    def __init__(self, token):
+        self.token = token
+        self.value = token.value #Memory waste
