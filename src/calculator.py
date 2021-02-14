@@ -265,3 +265,64 @@ class Parser(object):
 
     def parse(self):
         return self.expr()
+
+
+###############################################################################
+#                                                                             #
+#  INTERPRETER                                                                #
+#                                                                             #
+###############################################################################
+
+# Traverses Abstract Syntax Tree and performs actions
+
+class NodeVisitor(object):
+
+
+    def visit(self, node):
+        # Dynamically Call visit type
+        method_name = 'visit_' + type(node).__name__
+        visitor = getattr(self, method_name, self.generic_visit_exception) # Generates name and fetches function with that name
+        return visitor(node)
+
+
+    def generic_visit_exception(self, node):
+        raise Exception('No visit_{} method'.format(type(node).__name__))
+
+
+class Interpreter(NodeVisitor):
+
+    def __init__(self, parser):
+        self.parser = parser
+
+    def visit_BinOp(self, node):
+
+        # For Negative Numbers
+        #if node.left is None:
+        #    node.left = Num(Token(INTEGER, 0))
+
+        if node.op.type == PLUS:
+            return self.visit(node.left) + self.visit(node.right)
+        elif node.op.type == MINUS:
+            return self.visit(node.left) - self.visit(node.right)
+        elif node.op.type == MUL:
+            return self.visit(node.left) * self.visit(node.right)
+        elif node.op.type == DIV:
+            return self.visit(node.left) / self.visit(node.right)
+        elif node.op.type == POW:
+            return self.visit(node.left) ** self.visit(node.right)
+
+    def visit_UnaryOp(self, node):
+
+        op = node.op.type
+
+        if op == PLUS:
+            return self.visit(node.expr)
+        elif op == MINUS:
+            return -self.visit(node.expr)
+
+    def visit_Num(self, node):
+        return node.value
+
+    def interpret(self):
+        head = self.parser.parse()
+        return self.visit(head)
