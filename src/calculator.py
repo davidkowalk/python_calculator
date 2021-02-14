@@ -328,9 +328,36 @@ class Interpreter(NodeVisitor):
         return self.visit(head)
 
 
+def test_calc():
+    tests = {
+        "3 + 2 - 1": 4,
+        "56 / 2 - 4": 24,
+        "4 - 56 / 2": -24,
+        "2 / 20 * 2": 0.2,
+        "(2 + 3) / 2": 2.5,
+        "(3 - (2 + 3)) * 2": -4,
+        "(2*2) / (32 - 30) - 3": -1,
+        "-1+3*(-5+2)": -10,
+        "--3": 3,
+        "(5--16)*10/2": 105
+    }
+
+    for test in tests:
+        lexer = Lexer(test)
+        parser = Parser(lexer)
+        interpreter = Interpreter(parser)
+        print(f"Testing {test} = {tests[test]}")
+        assert interpreter.interpret() == tests[test]
+
+    print("ALL TESTS PASSED!")
+
 def main():
 
     from sys import argv
+
+    if argv[1] == "-t":
+        test_calc()
+        return
 
     for command in argv[1:]:
         print(f"{command} = ", end = "")
