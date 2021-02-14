@@ -165,3 +165,103 @@ class Num(AST):
     def __init__(self, token):
         self.token = token
         self.value = token.value #Memory waste
+
+
+class Parser(object):
+
+    def __init__(self, lexer):
+
+        self.lexer = lexer
+        self.current_token = self.lexer.get_next_token()
+
+    def error(self):
+        raise Exception("Parser Failure: Invalid Syntax.")
+
+    def eat(self, token_type):
+        """
+        Compares the type of the current token to the expected type and advances to the next token.
+        """
+        if self.current_token.type == token_type:
+            self.current_token = self.lexer.get_next_token()
+        else:
+            print(self.current_token.type, token_type)
+            self.error()
+
+    def factor(self):
+        """
+        Handles Unary operations and parentheses.
+
+        factor : PLUS factor
+           | MINUS factor
+           | INTEGER
+           | LPAREN expr RPAREN
+           | variable
+        """
+        token = self.current_token
+        if token.type == PLUS:
+            self.eat(PLUS)
+            return UnaryOp(token, self.factor())
+
+        elif token.type == MINUS:
+            self.eat(MINUS)
+            return UnaryOp(token, self.factor())
+
+        elif token.type == INTEGER:
+            self.eat(INTEGER)
+            return Num(token)
+
+        elif token.type == LPAREN:
+            self.eat(LPAREN)
+            node = self.expr()
+            self.eat(RPAREN)
+            return node
+
+
+    def term(self):
+
+        """
+        Handles Multiplication and devision:
+
+        term: factor ((MUL | DIV) factor)*
+        """
+
+        node = self.factor()
+
+        while self.current_token.type in (MUL, DIV):
+
+            token = self.current_token
+            if token.type == MUL:
+                self.eat(MUL)
+            elif token.type == DIV:
+                self.eat(DIV)
+
+            node = BinOp(left=node, op=token, right=self.factor())
+
+        return node
+
+
+    def expr(self):
+
+        """
+        Handles Binary operations off addition and subtraction.
+
+        expr: term ((PLUS | MINUS) term)*
+        """
+
+        # set current token to the first token taken from the input
+        node = self.term()
+
+        while self.current_token.type in (PLUS, MINUS):
+
+            token = self.current_token
+            if token.type == PLUS:
+                self.eat(PLUS)
+            elif token.type == MINUS:
+                self.eat(MINUS)
+
+            node = BinOp(left=node, op=token, right=self.term())
+
+        return node
+
+    def parse(self):
+        return self.expr()
