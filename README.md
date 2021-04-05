@@ -29,6 +29,6 @@ $ python3 calculator.py "2 - ((8 / 4) * ( 3*5-13 ))"
 
 ## Credit
 
-I am currently lerning on how to write a simple interpreter by following along [a blog by Ruslan Spivak](https://ruslanspivak.com/lsbasi-part1) for a game I am making.
+I am currently learning on how to write a simple interpreter by following along [a blog by Ruslan Spivak](https://ruslanspivak.com/lsbasi-part1) for a game I am making.
 
 A large portion of this projects code was **heavily** inspired by his tutorial.
